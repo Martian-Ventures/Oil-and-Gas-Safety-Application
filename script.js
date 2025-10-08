@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Set default dates
     setDefaultDates();
     
+    
     // Add event listener for save audit button
     document.getElementById('save-audit').addEventListener('click', saveAudit);
 });
