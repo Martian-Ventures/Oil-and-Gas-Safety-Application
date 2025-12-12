@@ -20,17 +20,20 @@ def index():
 @login_required
 @login_required
 def dashboard():
-    return send_from_directory('static', 'index.html')
-    # Example: show different content by role
-    #return render_template('dashboard.html', user=current_user)
-    # Serve the static dashboard file
+   # Serve different templates by role
+    if current_user.role == 'admin':
+        return redirect(url_for('main.admin_dashboard'))
+    elif current_user.role == 'auditor':
+        return render_template('auditor/dashboard.html', user=current_user)
+    else:  # employee/user
+        return render_template('index.html', user=current_user)
     
 
 @bp.route('/admin')
 @login_required
 @role_required('Admin')
 def admin_dashboard():
-    return render_template('admin/dashboard.html')
+    return render_template('admin/admin_dashboard.html')
 
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -39,5 +42,7 @@ def register():
         # handle form submission, e.g., create user
         flash('Account created successfully!', 'success')
         return redirect(url_for('main.register'))
+        
+
     return render_template('auth/register.html', form=form)
 

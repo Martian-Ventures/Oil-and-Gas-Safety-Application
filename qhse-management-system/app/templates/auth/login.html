@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="w-full max-w-md bg-white shadow-2xl rounded-2xl p-8 border border-gray-100 backdrop-blur-sm">
-  
+
   <!-- Header -->
   <div class="text-center mb-6">
     <h2 class="text-2xl font-bold text-gray-800">Welcome Back</h2>
@@ -17,18 +17,20 @@
     <!-- Email -->
     <div>
       {{ form.email.label(class="block text-sm font-medium text-gray-700 mb-1") }}
-      {{ form.email(class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none") }}
+      {{ form.email(class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400
+      focus:outline-none") }}
       {% if form.email.errors %}
-        <p class="text-red-500 text-sm mt-1">{{ form.email.errors[0] }}</p>
+      <p class="text-red-500 text-sm mt-1">{{ form.email.errors[0] }}</p>
       {% endif %}
     </div>
 
     <!-- Password -->
     <div>
       {{ form.password.label(class="block text-sm font-medium text-gray-700 mb-1") }}
-      {{ form.password(class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none") }}
+      {{ form.password(class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400
+      focus:outline-none") }}
       {% if form.password.errors %}
-        <p class="text-red-500 text-sm mt-1">{{ form.password.errors[0] }}</p>
+      <p class="text-red-500 text-sm mt-1">{{ form.password.errors[0] }}</p>
       {% endif %}
     </div>
 
@@ -42,16 +44,25 @@
 
     <!-- Submit Button - Fixed to show "Login" -->
     <div>
-      <button type="submit" class="w-full text-white font-semibold py-2 rounded-lg hover:#124E56 transition duration-200 style="background-color: #124E56;">
+      <button type="submit"
+        class="w-full text-white font-semibold py-2 rounded-lg hover:bg-[#124E56] transition duration-200"
+        style="background-color: #124E56;">
         Login
       </button>
     </div>
+
+    <div class="text-center mt-4">
+      <a href="{{ url_for('auth.reset_password_request') }}" class="text-[#124E56] hover:underline">
+        Forgot your password?
+      </a>
+    </div>
+
   </form>
 
   <!-- Register Redirect -->
   <p class="text-center text-sm text-gray-600 mt-6">
     Don't have an account?
-    <a href="{{ url_for('auth.register') }}" class="text-blue-600 hover:underline font-medium">Register here</a>
+    <a href="{{ url_for('auth.register') }}" class="text-[#124E56] hover:underline font-medium">Register here</a>
   </p>
 </div>
 {% endblock %}

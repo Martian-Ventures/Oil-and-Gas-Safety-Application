@@ -28,6 +28,22 @@ a {
     background-color: #124E56;
     color: white;
     padding: 20px 0;
+    top: 0;
+    left: 0;
+    position: fixed;
+    height: 100vh;
+    overflow: hidden;
+    z-index: 20;/* sit above main content */
+    padding:1rem;/* optional inner spacing */
+}
+
+/* Sticky header inside main content */
+.main-content header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .logo {
@@ -59,9 +75,11 @@ a {
 
 /* Main Content Styles */
 .main-content {
+    margin-left: 16rem;/* space for sidebar */
     flex: 1;
     padding: 20px;
     overflow-y: auto;
+    height: 100vh;
 }
 
 .header {

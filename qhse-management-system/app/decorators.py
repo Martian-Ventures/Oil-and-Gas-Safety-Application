@@ -26,6 +26,8 @@ def role_required(*roles):
             if current_user.role not in roles:
                 flash("You do not have permission to access this page.", "danger")
                 return redirect(url_for('main.index'))
+                
+
 
             # Otherwise, proceed
             return f(*args, **kwargs)

@@ -6,6 +6,7 @@ from itsdangerous import URLSafeTimedSerializer as Serializer
 from flask import current_app
 from datetime import datetime
 
+
 user_roles = db.Table(
     "user_roles",
     db.Column("user_id", db.Integer, db.ForeignKey("users.id"), primary_key=True),
@@ -19,7 +20,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    role = db.Column(db.String(50), default='Employee')  # Admin, HSE, Supervisor, Employee, Auditor
+    role = db.Column(db.Enum("admin", "auditor", "employee", name="role_enum"), nullable=False, default="employee")
     roles = db.relationship("Role", secondary=user_roles, backref=db.backref("users", lazy="dynamic"))
     is_active = db.Column(db.Boolean, default=True)     # email confirmed
     twofa_secret = db.Column(db.String(32), nullable=True) # optional TOTP secret
@@ -53,6 +54,19 @@ class User(UserMixin, db.Model):
         if data.get('purpose') != purpose:
             return None
         return User.query.get(data.get('user_id'))
+    
+    # relationships
+    incidents = db.relationship(
+        "Incident",
+        back_populates="created_by",
+        overlaps="assigned_incidents,investigator"
+    )
+    assigned_incidents = db.relationship(
+        "Incident",
+        back_populates="investigator",
+        overlaps="incidents,created_by"
+    )
+
 
 
 class Role(db.Model):
@@ -66,29 +80,102 @@ class Role(db.Model):
     
 class Incident(db.Model):
     __tablename__ = "incidents"
+
     id = db.Column(db.Integer, primary_key=True)
+
+    # Basic fields
     title = db.Column(db.String(255), nullable=False)
-    department = db.Column(db.String(128))
-    type = db.Column(db.String(64))
-    description = db.Column(db.Text)
+    department = db.Column(db.String(128))  # Admin, Production, Finance, Logistics, QC, etc.
+    category = db.Column(db.String(64))  # Falls, Cuts, Burns, Fires, etc.
+    type = db.Column(db.String(64))  # Near-Miss, Incident, etc.
     severity = db.Column(db.String(32))
-    status = db.Column(db.String(32), default="Reported")  # e.g., Reported, Under Investigation, Resolved, Closed
-    created_by_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    created_by = db.relationship("User", backref=db.backref("incidents", lazy=True))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    description = db.Column(db.Text)
+
+    # New fields
+    employees_affected = db.Column(db.Integer, nullable=False, default=0)
+    hours_per_employee = db.Column(db.Float, nullable=False, default=0.0)  # used for man-hours
+    idle_time_hours = db.Column(db.Float, nullable=False, default=0.0)  # idle time since incident
+    hours_lost = db.Column(db.Float, nullable=False, default=0.0)
+    cost_per_hour = db.Column(db.Float, nullable=False, default=0.0)
+    total_cost = db.Column(db.Float, nullable=False, default=0.0)
+    investigator_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    investigator = db.relationship(
+        "User",
+        back_populates="assigned_incidents",
+        overlaps="incidents,created_by"
+    )
+
+    # Date & user tracking
     incident_datetime = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    reported_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    created_by_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    created_by = db.relationship(
+        "User",
+        back_populates="incidents",
+        overlaps="assigned_incidents,investigator"
+    )
+
+    status = db.Column(db.String(32), default="Reported")
+    # Reported, Under Investigation, Resolved, Closed
+
+    # Auto calculation before saving
+    def calculate_totals(self):
+        self.hours_lost = self.employees_affected * self.hours_per_employee
+        self.total_cost = self.hours_lost * self.cost_per_hour
 
     def to_dict(self):
         return {
             "id": self.id,
             "title": self.title,
             "department": self.department,
+            "category": self.category,
             "type": self.type,
             "severity": self.severity,
+            "description": self.description,
+            "employees_affected": self.employees_affected,
+            "hours_per_employee": self.hours_per_employee,
+            "idle_time_hours": self.idle_time_hours,
+            "hours_lost": self.hours_lost,
+            "cost_per_hour": self.cost_per_hour,
+            "total_cost": self.total_cost,
+            "incident_datetime": self.incident_datetime.isoformat() if self.incident_datetime else None,
             "status": self.status,
             "created_by": self.created_by.username if self.created_by else None,
             "created_at": self.created_at.isoformat(),
         }
+    
+        
+    @property
+    def idle_timedelta(self):
+        # returns a datetime.timedelta
+        reported = self.reported_at or datetime.utcnow()
+        return datetime.utcnow() - reported
+
+    @property
+    def idle_hours(self):
+        td = self.idle_timedelta
+        return round(td.total_seconds() / 3600, 2)
+
+    @property
+    def idle_days(self):
+        td = self.idle_timedelta
+        return td.days + td.seconds / 86400
+
+    @property
+    def idle_human(self):
+        td = self.idle_timedelta
+        seconds = td.total_seconds()
+        if seconds < 60:
+            return f"{int(seconds)} seconds"
+        if seconds < 3600:
+            return f"{int(seconds // 60)} minutes"
+        if seconds < 86400:
+            return f"{round(seconds / 3600, 1)} hours"
+        days = int(seconds // 86400)
+        return f"{days} days"
+    
         
 class IncidentUpdate(db.Model):
     __tablename__ = "incident_updates"

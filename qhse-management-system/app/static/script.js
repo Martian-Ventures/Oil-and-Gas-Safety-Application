@@ -304,7 +304,7 @@ function initAuditPlanTable() {
         this.parentElement.parentElement.cells[1].textContent;
 
       const action = confirm(
-        `Schedule audit for ${organization} in ${months[month]}?`
+        "Schedule audit for ${organization} in ${months[month]}?"
       );
 
       if (action) {
@@ -750,18 +750,339 @@ if (
 }
 
 function closeIncidentAPI(id) {
-  fetch(`/incidents/${id}/close`, {
+  fetch("/incidents/${id}/close", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    credentials: "same-origin"
-  }).then(r => r.json()).then(res => {
-    if (res.status === "ok") {
-      alert("Closed");
-      location.reload();
-    }
+    credentials: "same-origin",
+  })
+    .then((r) => r.json())
+    .then((res) => {
+      if (res.status === "ok") {
+        alert("Closed");
+        location.reload();
+      }
+    });
+}
+
+// Function to dynamically calculate hours lost and total cost
+function calculateIncidentLoss() {
+  const employees =
+    parseFloat(document.getElementById("incident-employees").value) || 0;
+  const hoursPerEmployee =
+    parseFloat(document.getElementById("incident-hours-per-employee").value) ||
+    0;
+  const costPerHour =
+    parseFloat(document.getElementById("incident-cost-per-hour").value) || 0;
+
+  const totalHoursLost = employees * hoursPerEmployee;
+  const totalCost = totalHoursLost * costPerHour;
+
+  document.getElementById("incident-hours-lost").value =
+    totalHoursLost + " hours";
+  document.getElementById("incident-total-cost").value =
+    "$" + totalCost.toFixed(2);
+}
+
+// Add event listeners to recalculate whenever relevant fields change
+document
+  .getElementById("incident-employees")
+  .addEventListener("input", calculateIncidentLoss);
+document
+  .getElementById("incident-hours-per-employee")
+  .addEventListener("input", calculateIncidentLoss);
+document
+  .getElementById("incident-cost-per-hour")
+  .addEventListener("input", calculateIncidentLoss);
+
+function updateIdleTime() {
+  const reportedAt = new Date("{{ incident.reported_at.isoformat() }}");
+  const now = new Date();
+  const diffMs = now - reportedAt;
+
+  const minutes = Math.floor(diffMs / 60000);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  let text = "";
+  if (days > 0) text += `${days} days `;
+  if (hours % 24 > 0) text += `${hours % 24} hours `;
+  if (minutes % 60 > 0) text += `${minutes % 60} minutes`;
+
+  document.getElementById("idleTime").innerText = text.trim();
+}
+
+updateIdleTime();
+setInterval(updateIdleTime, 60000); // update every minute
+
+// Example usage:
+fetch("/incidents/1") // fetch single incident JSON
+  .then((res) => res.json())
+  .then((data) => updateIdleTime(data.reported_at));
+
+setInterval(() => {
+  fetch("/incidents/1")
+    .then((res) => res.json())
+    .then((data) => updateIdleTime(data.reported_at));
+}, 60000); // refresh every minute
+
+// Assume `incidents` is your array of incident objects fetched from the backend
+// Example incident object:
+// { id: 1, title: "Fall in warehouse", department: "Operations", severity: "High" }
+
+// JS: Populate All Incidents table with Idle Time and action buttons
+
+//const tbody = document.getElementById("incident-table-body");
+
+// Helper: calculate idle time
+function formatIdleTime(reportedAt) {
+  if (!reportedAt) return "Unknown";
+  const reportedDate = new Date(reportedAt);
+  const now = new Date();
+  const diffMs = now - reportedDate;
+  const minutes = Math.floor(diffMs / 60000);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  let text = "";
+  if (days > 0) text += `${days}d `;
+  if (hours % 24 > 0) text += `${hours % 24}h `;
+  if (minutes % 60 > 0) text += `${minutes % 60}m`;
+  return text.trim() || "0m";
+}
+
+// Populate the table
+function populateIncidentTable(incidents) {
+  tbody.innerHTML = "";
+  incidents.forEach((inc, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${inc.department}</td>
+            <td>${new Date(inc.incident_datetime).toLocaleDateString()}</td>
+            <td>${inc.type}</td>
+            <td>${inc.employees_affected}</td>
+            <td>${inc.hours_lost}</td>
+            <td>${inc.total_cost.toFixed(2)}</td>
+            <td>${inc.status || "Pending"}</td>
+            <td>
+                <button class="view-btn btn btn-primary" data-id="${
+                  inc.id
+                }">View</button>
+                <button class="edit-btn btn btn-warning" data-id="${
+                  inc.id
+                }">Edit</button>
+                <button class="delete-btn btn btn-danger" data-id="${
+                  inc.id
+                }">Delete</button>
+            </td>
+        `;
+    tbody.appendChild(row);
   });
 }
 
+// Event delegation
+tbody.addEventListener("click", function (e) {
+  const target = e.target;
+  const incidentId = target.dataset.id;
+  if (!incidentId) return;
+
+  if (target.classList.contains("view-btn")) {
+    window.location.href = `/incidents/${incidentId}`;
+  } else if (target.classList.contains("edit-btn")) {
+    window.location.href = `/incidents/edit/${incidentId}`;
+  } else if (target.classList.contains("delete-btn")) {
+    if (confirm("Are you sure you want to delete this incident?")) {
+      fetch(`/incidents/delete/${incidentId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          alert(data.message || "Incident deleted");
+          target.closest("tr").remove();
+        })
+        .catch((err) => console.error(err));
+    }
+  }
+});
+
+// Fetch incidents from backend (replace with your actual API)
+async function fetchIncidents() {
+  try {
+    const res = await fetch("/incidents/list"); // your Flask route returning JSON
+    const data = await res.json();
+    window.incidents = data; // make global so Idle Time refresh works
+    populateIncidentTable(data);
+  } catch (err) {
+    console.error("Error fetching incidents:", err);
+  }
+}
+
+// Initial fetch
+fetchIncidents();
+
+// Optional: refresh Idle Time every minute
+setInterval(() => {
+  if (window.incidents) populateIncidentTable(window.incidents);
+}, 60000);
+
+// JS functions for static buttons
+function viewIncident(id) {
+  window.location.href = `/incidents/${id}`;
+}
+
+function editIncident(id) {
+  window.location.href = `/incidents/edit/${id}`;
+}
+
+function deleteIncident(id) {
+  if (confirm("Are you sure you want to delete this incident?")) {
+    fetch(`/incidents/delete/${id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        alert(data.message || "Incident deleted");
+        // Remove the row from the table
+        const btn = document.querySelector(
+          `[onclick*="deleteIncident(${id})"]`
+        );
+        if (btn) btn.closest("tr").remove();
+      })
+      .catch((err) => console.error(err));
+  }
+}
+
+const tbody = document.getElementById("incident-table-body");
+
+function populateIncidents(incidents) {
+  // Clear all rows except the first static example row if you want
+  tbody.innerHTML = "";
+
+  incidents.forEach((inc, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${inc.department}</td>
+            <td>${new Date(inc.incident_datetime).toLocaleDateString()}</td>
+            <td>${inc.type}</td>
+            <td>${inc.employees_affected}</td>
+            <td>${inc.hours_lost}</td>
+            <td>${inc.total_cost.toFixed(2)}</td>
+            <td>${inc.status || "Pending"}</td>
+            <td>
+                <button class="view-btn btn btn-primary" onclick="viewIncident(${
+                  inc.id
+                })">View</button>
+                <button class="edit-btn btn btn-warning" onclick="editIncident(${
+                  inc.id
+                })">Edit</button>
+                <button class="delete-btn btn btn-danger" onclick="deleteIncident(${
+                  inc.id
+                })">Delete</button>
+            </td>
+        `;
+    tbody.appendChild(row);
+  });
+}
+
+// calculate total cost whenever numbers change
+function calculateIncidentLoss() {
+  const employees =
+    parseFloat(document.getElementById("incident-employees")?.value) || 0;
+  const hoursPerEmployee =
+    parseFloat(document.getElementById("incident-hours-per-employee")?.value) ||
+    0;
+  const idleHours =
+    parseFloat(document.getElementById("incident-idle-hours")?.value) || 0;
+  const costPerHour =
+    parseFloat(document.getElementById("incident-cost-per-hour")?.value) || 0;
+
+  // total hours lost counts both direct hours and idle hours (you can adapt formula)
+  const totalHoursLost = employees * hoursPerEmployee + idleHours;
+  const totalCost = totalHoursLost * costPerHour;
+
+  const totalHoursField = document.getElementById("incident-hours-lost");
+  if (totalHoursField) totalHoursField.value = totalHoursLost + " hours";
+
+  document.getElementById("incident-total-cost").value =
+    "$" + totalCost.toFixed(2);
+}
+
+// Attach listeners (call once at bottom of script.js)
+[
+  "incident-employees",
+  "incident-hours-per-employee",
+  "incident-idle-hours",
+  "incident-cost-per-hour",
+].forEach((id) => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener("input", calculateIncidentLoss);
+});
+
+function computeIdleHours(incidentDatetimeIso) {
+  if (!incidentDatetimeIso) return 0;
+  const reported = new Date(incidentDatetimeIso);
+  const diffMs = Date.now() - reported.getTime();
+  return Math.max(0, diffMs / (1000 * 60 * 60)); // hours (float)
+}
+
+// Update Idle Time displayed on detail page
+function updateIdleTimeUI(incidentDatetimeIso) {
+  const hours = computeIdleHours(incidentDatetimeIso);
+  const el = document.getElementById("idleTime");
+  if (el)
+    el.innerText =
+      hours >= 1
+        ? hours.toFixed(2) + " hours"
+        : Math.round(hours * 60) + " minutes";
+}
+
+// Call this when opening details (example)
+function openIncidentDetailsWithIdle(incident) {
+  // incident.incident_datetime should be ISO
+  updateIdleTimeUI(incident.incident_datetime);
+  // also update detail fields...
+  // set interval to update every minute:
+  if (window._idleInterval) clearInterval(window._idleInterval);
+  window._idleInterval = setInterval(
+    () => updateIdleTimeUI(incident.incident_datetime),
+    60000
+  );
+}
+
+function openAuditModal(auditId) {
+  // fetch audit details from backend
+  fetch(`/audits/${auditId}/json`)
+    .then((res) => res.json())
+    .then((data) => {
+      document.getElementById("auditModalTitle").innerText = `Audit: ${
+        data.title || auditId
+      }`;
+      document.getElementById("auditModalBody").innerHTML = `
+        <p><strong>Date:</strong> ${data.date || "N/A"}</p>
+        <p><strong>Type:</strong> ${data.type || "N/A"}</p>
+        <p><strong>Scope:</strong> ${data.scope || "N/A"}</p>
+        <p><strong>Auditor:</strong> ${data.auditor || "N/A"}</p>
+        <p><strong>Status:</strong> ${data.status || "N/A"}</p>
+        <p><strong>Notes:</strong><br/> ${data.notes || ""}</p>
+      `;
+      document.getElementById("auditModal").classList.remove("hidden");
+    })
+    .catch((err) => {
+      alert("Error loading audit");
+      console.error(err);
+    });
+}
+
+function closeAuditModal() {
+  document.getElementById("auditModal").classList.add("hidden");
+}
+
+icon.addEventListener("click", function () {
+  const auditId = this.dataset.auditId || /* derive id */ 1;
+  openAuditModal(auditId);
+});
 
 // Function to highlight the correct sidebar menu item
 /*function highlightSidebarMenu() {

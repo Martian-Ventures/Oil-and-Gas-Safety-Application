@@ -1,8 +1,9 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Martian QHSE{% endblock %}</title>
 
   <!-- Tailwind CSS -->
@@ -13,20 +14,56 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   {% block head_scripts %}{% endblock %}
 </head>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const flashes = document.querySelectorAll('.flash-msg');
+    flashes.forEach(msg => {
+      setTimeout(() => {
+        msg.style.transition = "opacity 0.5s";
+        msg.style.opacity = "0";
+        setTimeout(() => msg.remove(), 500);
+      }, 3000); // Hide after 3 seconds
+    });
+  });
+</script>
+
+
 <body class="bg-slate-50 min-h-screen">
+  <!-- Topbar -->
+  <header class="bg-white shadow py-2 px-4 flex items-center justify-between">
+    <div class="flex items-center gap-4">
+      <a href="{{ url_for('main.index') }}" class="text-lg font-bold text-124E56">QHSE</a>
+    </div>
+
+    <div class="flex items-center gap-3">
+      {% if current_user.is_authenticated %}
+      <div class="text-sm">{{ current_user.full_name }}</div>
+      <div title="{{ current_user.full_name }}"
+        style="width:40px;height:40px;border-radius:50%;background:#124E56;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">
+        {{ current_user.full_name.split(' ')[0][0] ~ (current_user.full_name.split(' ')[1][0] if
+        current_user.full_name.split(' ')|length > 1 else '') }}
+      </div>
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-danger ml-2">Logout</a>
+      {% else %}
+      <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
+      {% endif %}
+    </div>
+  </header>
 
   <!-- Flash messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      <div class="fixed top-4 right-4 z-50 space-y-2">
-        {% for category, msg in messages %}
-          <div class="px-4 py-2 rounded-lg shadow text-white
+  {% if messages %}
+  <div class="fixed top-4 right-4 z-50 space-y-2">
+    {% for category, msg in messages %}
+    <div
+      class="flash-msg px-4 py-2 rounded-lg shadow text-white
             {% if category == 'success' %}bg-green-500{% elif category == 'error' %}bg-red-500{% else %}bg-blue-500{% endif %}">
-            {{ msg }}
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
+      {{ msg }}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
   {% endwith %}
 
   <!-- Main content -->
@@ -38,4 +75,6 @@
   <script src="{{ url_for('static', filename='script.js') }}"></script>
   {% block scripts %}{% endblock %}
 </body>
+
+
 </html>
