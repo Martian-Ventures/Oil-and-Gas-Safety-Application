@@ -8,10 +8,13 @@
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
   {% block head_scripts %}{% endblock %}
 </head>
 
@@ -23,42 +26,52 @@
         msg.style.transition = "opacity 0.5s";
         msg.style.opacity = "0";
         setTimeout(() => msg.remove(), 500);
-      }, 3000); // Hide after 3 seconds
+      }, 3000);
     });
   });
 </script>
 
+<body class="min-h-screen relative overflow-hidden {% block body_class %}bg-slate-50{% endblock %}">
 
-<body class="bg-slate-50 min-h-screen">
-  <!-- Topbar -->
-  <header class="bg-white shadow py-2 px-4 flex items-center justify-between">
-    <div class="flex items-center gap-4">
-      <a href="{{ url_for('main.index') }}" class="text-lg font-bold text-124E56">QHSE</a>
-    </div>
+  {% block background %}{% endblock %}
+
+  {% block navbar %}
+  <!-- Topbar 
+  <header class="bg-white/90 backdrop-blur-md shadow py-2 px-4 flex items-center justify-between relative z-20">
+    <a href="{{ url_for('main.index') }}" class="text-lg font-bold text-[#E10600]">
+      Martian QHSE Management System
+    </a>
 
     <div class="flex items-center gap-3">
       {% if current_user.is_authenticated %}
       <div class="text-sm">{{ current_user.full_name }}</div>
-      <div title="{{ current_user.full_name }}"
-        style="width:40px;height:40px;border-radius:50%;background:#124E56;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700">
+      <div class="w-10 h-10 rounded-xl bg-[#E10600] text-white flex items-center justify-center font-bold">
         {{ current_user.full_name.split(' ')[0][0] ~ (current_user.full_name.split(' ')[1][0] if
         current_user.full_name.split(' ')|length > 1 else '') }}
       </div>
-      <a href="{{ url_for('auth.logout') }}" class="btn btn-danger ml-2">Logout</a>
+      <a href="{{ url_for('auth.logout') }}"
+        class="ml-2 px-3 py-1 rounded bg-red-500 text-white text-sm hover:bg-red-600 transition">
+        Logout
+      </a>
       {% else %}
-      <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
+      <a href="{{ url_for('auth.login') }}"
+        class="px-4 py-1.5 rounded bg-[#E10600] text-white text-sm hover:brightness-110 transition">
+        Login
+      </a>
       {% endif %}
     </div>
   </header>
+  {% endblock %} -->
 
   <!-- Flash messages -->
   {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
   <div class="fixed top-4 right-4 z-50 space-y-2">
     {% for category, msg in messages %}
-    <div
-      class="flash-msg px-4 py-2 rounded-lg shadow text-white
-            {% if category == 'success' %}bg-green-500{% elif category == 'error' %}bg-red-500{% else %}bg-blue-500{% endif %}">
+    <div class="flash-msg px-4 py-2 rounded-lg shadow text-white
+      {% if category == 'success' %}bg-green-500
+      {% elif category == 'error' %}bg-red-500
+      {% else %}bg-blue-500{% endif %}">
       {{ msg }}
     </div>
     {% endfor %}
@@ -67,14 +80,14 @@
   {% endwith %}
 
   <!-- Main content -->
-  <main class="flex items-center justify-center min-h-screen">
+  <main class="relative z-10 flex items-center justify-center min-h-[calc(100vh-64px)] px-4">
     {% block content %}{% endblock %}
   </main>
 
   <!-- Scripts -->
   <script src="{{ url_for('static', filename='script.js') }}"></script>
   {% block scripts %}{% endblock %}
-</body>
 
+</body>
 
 </html>

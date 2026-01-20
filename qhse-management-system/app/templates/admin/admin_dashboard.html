@@ -105,28 +105,110 @@
 <body>
     <div class="container">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="logo">
-                <h1>QHSE Management System</h1>
+        <!-- Sidebar -->
+        <div
+            class="sidebar fixed inset-y-0 left-0 z-30 w-64 bg-white text-black flex flex-col shadow-xl overflow-hidden">
+
+            <!-- Logo / Brand header -->
+            <div class="p-6 flex flex-col items-center border-b border-white">
+                <!-- Yin-Yang logo using register-bg.jpg -->
+                <div class="mb-2 relative">
+                    <img src="/static/images/register-bg.jpg" alt="QHSE Logo"
+                        class="w-100 h-100 rounded-xl object-cover ring-2 ring-white shadow-2xl" />
+                    <!-- Optional subtle overlay/glow effect -->
+                    <div
+                        class="absolute inset-0 rounded-xl bg-gradient-to-b from-transparent via-transparent to-black/30 pointer-events-none">
+                    </div>
+                </div>
+
+                <!-- Optional small brand text under logo 
+                <h2 class="text-lg font-semibold tracking-wide text-black text-center">
+                    QHSE Management System
+                </h2> -->
             </div>
-            <ul class="menu">
-                <li data-section="dashboard-section"><a href="javascript:void(0)">Dashboard</a></li>
-                <li data-section="audit-section" class="active"><a href="javascript:void(0)">Audit Management</a></li>
-                <li data-section="incident-section"><a href="javascript:void(0)">Incident Management</a></li>
-                <!-- <li data-section="training-section"><a href="javascript:void(0)">Training & Briefings</a></li>
-                <li data-section="docs-section"><a href="javascript:void(0)">Document Management</a></li> -->
-                <li>Customer complaint</li>
-                <li>Employee suggestion</li>
-                <li>Safety inspection</li>
-                <li>Work Permit</li>
-                <li>Setup</li>
-                <li>Certificate tracker</li>
-                <li>NCR module</li>
-            </ul>
+
+            <!-- Navigation -->
+            <nav class="flex-1 px-3 pt-2 pb-5 overflow-y-auto">
+                <ul class="menu space-y-1.5">
+                    <li data-section="dashboard-section" class="group">
+                        <a href="javascript:void(0)" class="block px-5 py-3 text-black 
+                                  group-hover:text-white group-hover:bg-gray-800/30 group-hover:rounded-lg 
+                                  group-[.active]:pl-5 group-[.active]:pr-0 group-[.active]:py-3.5 
+                                  group-[.active]:bg-red-600 group-[.active]:text-white 
+                                  group-[.active]:font-medium group-[.active]:rounded-l-full 
+                                  transition-colors">
+                            Dashboard
+                        </a>
+                    </li>
+
+                    <li data-section="audit-section" class="group">
+                        <a href="javascript:void(0)" class="block px-5 py-3 text-black 
+                                  group-hover:text-white group-hover:bg-gray-800/30 group-hover:rounded-lg 
+                                  group-[.active]:pl-5 group-[.active]:pr-0 group-[.active]:py-3.5 
+                                  group-[.active]:bg-red-600 group-[.active]:text-white 
+                                  group-[.active]:font-medium group-[.active]:rounded-l-full 
+                                  transition-colors">
+                            Audit Management
+                        </a>
+                    </li>
+
+                    <!-- repeat for every other item -->
+
+
+                    <li data-section="incident-section" class="group">
+                        <a href="javascript:void(0)" class="block px-5 py-3 text-black 
+                                  group-hover:text-white group-hover:bg-gray-800/30 group-hover:rounded-lg 
+                                  group-[.active]:pl-5 group-[.active]:pr-0 group-[.active]:py-3.5 
+                                  group-[.active]:bg-red-600 group-[.active]:text-white 
+                                  group-[.active]:font-medium group-[.active]:rounded-l-full 
+                                  transition-colors">
+                            Incident Management
+                        </a>
+                    </li>
+
+                    <!-- Add all your other menu items in the same inactive style -->
+                    <!-- Example:
+                    <li data-section="training-section">
+                        <a href="javascript:void(0)" class="block px-5 py-3 text-black hover:text-white hover:bg-gray-800/30 rounded-lg transition-colors">
+                            Training & Briefings
+                        </a>
+                    </li>
+                    -->
+
+                    <!-- Add other items like the inactive ones above -->
+
+
+                    <!-- add other items the same way (without .active) -->
+
+
+                    <!-- Uncomment when needed -->
+                    <!--
+                    <li data-section="training-section">
+                        <a href="javascript:void(0)" class="group flex items-center gap-3 px-4 py-3 rounded-xl text-black hover:bg-gray-800/70 hover:text-white transition-all duration-200">
+                            <span class="text-xl opacity-80 group-hover:opacity-100">🎓</span>
+                            Training & Briefings
+                        </a>
+                    </li>
+        
+                    <li data-section="docs-section">
+                        <a href="javascript:void(0)" class="group flex items-center gap-3 px-4 py-3 rounded-xl text-black hover:bg-gray-800/70 hover:text-white transition-all duration-200">
+                            <span class="text-xl opacity-80 group-hover:opacity-100">📄</span>
+                            Document Management
+                        </a>
+                    </li>
+                    -->
+                </ul>
+            </nav>
+
+            <!-- Optional footer / version info -->
+            <div class="p-4 text-xs text-gray-600 border-t border-gray-800/60 text-center">
+                © 2026 • QHSE System
+            </div>
         </div>
 
         <!-- Main Content -->
-        <div class="main-content">
+        <div
+            class="main-content flex-1 ml-64 bg-[url('/static/images/register-bg.jpg')] bg-cover bg-center bg-no-repeat min-h-screen">
             <!-- --------------- DASHBOARD SECTION (placeholder) ---------------- -->
             <div id="dashboard-section" class="hidden">
                 <div class="header">
@@ -175,9 +257,24 @@
             <div id="audit-section">
                 <div class="header">
                     <div class="breadcrumb" id="breadcrumb">Home / Audit Management / Audit Plan</div>
-                    <div class="user-info">
-                        <span>John Doe</span>
-                        <div class="avatar">JD</div>
+                    <div class="flex items-center gap-3">
+                        {% if current_user.is_authenticated %}
+                        <div class="text-sm">{{ current_user.full_name }}</div>
+                        <div
+                            class="w-10 h-10 rounded-xl bg-[#E10600] text-white flex items-center justify-center font-bold">
+                            {{ current_user.full_name.split(' ')[0][0] ~ (current_user.full_name.split(' ')[1][0] if
+                            current_user.full_name.split(' ')|length > 1 else '') }}
+                        </div>
+                        <a href="{{ url_for('auth.logout') }}"
+                            class="ml-2 px-3 py-1 rounded bg-red-500 text-white text-sm hover:bg-red-600 transition">
+                            Logout
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('auth.login') }}"
+                            class="px-4 py-1.5 rounded bg-[#E10600] text-white text-sm hover:brightness-110 transition">
+                            Login
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -659,7 +756,7 @@
                         </table>
                     </div>
 
-                    <div class="footer">© COPYRIGHT 2023</div>
+                    <div class="footer">Martian QHSE System © COPYRIGHT 2026</div>
                 </div>
             </div>
 
@@ -1026,7 +1123,7 @@
                 </div>
 
 
-                <div class="footer">© COPYRIGHT 2023</div>
+                <div class="footer">Martian QHSE System © COPYRIGHT 2026</div>
             </div>
 
             <!-- --------------- DOCUMENTS SECTION (Document Management) ---------------- -->
@@ -1074,6 +1171,19 @@
 
     <script>
         /* ================= Sidebar navigation switching ================= */
+        document.querySelectorAll('.menu li').forEach(item => {
+            item.addEventListener('click', function () {
+                // Remove active from all
+                document.querySelectorAll('.menu li').forEach(li => li.classList.remove('active'));
+                // Add active to clicked
+                this.classList.add('active');
+                // Optional: load content based on data-section
+                const section = this.getAttribute('data-section');
+                // show/hide sections...
+            });
+        });
+
+
         const menuItems = document.querySelectorAll('.menu li[data-section]');
         function setActiveMenu(item) {
             menuItems.forEach(i => i.classList.remove('active'));
