@@ -12,3 +12,4 @@ Flask-Cors
 Flask-RESTful  
 itsdangerous
 pyotp
+gunicorn==21.2.0
