@@ -9,7 +9,7 @@
 {% block background %}
 <!-- Background Image -->
 <div class="absolute inset-0 -z-10">
-  <div class="w-full h-full bg-[url('{{ url_for('static', filename='images/register-bg.jpg') }}')]
+  <div class="w-full h-full bg-[url('{{ url_for('static', filename='https://placeholder.com') }}')]
            bg-cover bg-center blur-sm scale-105">
   </div>
   <div class="absolute inset-0 bg-black/40"></div>
@@ -25,8 +25,8 @@
 
     <!-- Header -->
     <div class="text-center mb-6">
-      <h2 class="text-2xl font-bold text-[#E10600]">Welcome Back</h2>
-      <p class="text-sm text-[#E10600] mt-1">
+      <h2 class="text-2xl font-bold text-[#05561b]">Welcome Back</h2>
+      <p class="text-sm text-[#05561b] mt-1">
         Login to your Martian QHSE account and manage safety effortlessly.
       </p>
     </div>
@@ -37,9 +37,9 @@
 
       <!-- Email -->
       <div>
-        {{ form.email.label(class="block text-sm font-medium text-[#E10600] mb-1") }}
+        {{ form.email.label(class="block text-sm font-medium text-[#05561b] mb-1") }}
         {{ form.email(class="w-full px-4 py-2 border border-gray-300 rounded-lg
-        focus:ring-2 focus:ring-[#E10600]/40 focus:border-[#E10600]
+        focus:ring-2 focus:ring-[#05561b]/40 focus:border-[#05561b]
         focus:outline-none bg-white/90") }}
         {% if form.email.errors %}
         <p class="text-red-500 text-sm mt-1">{{ form.email.errors[0] }}</p>
@@ -48,9 +48,9 @@
 
       <!-- Password -->
       <div>
-        {{ form.password.label(class="block text-sm font-medium text-[#E10600] mb-1") }}
+        {{ form.password.label(class="block text-sm font-medium text-[#05561b] mb-1") }}
         {{ form.password(class="w-full px-4 py-2 border border-gray-300 rounded-lg
-        focus:ring-2 focus:ring-[#E10600]/40 focus:border-[#E10600]
+        focus:ring-2 focus:ring-[#05561b]/40 focus:border-[#05561b]
         focus:outline-none bg-white/90") }}
         {% if form.password.errors %}
         <p class="text-red-500 text-sm mt-1">{{ form.password.errors[0] }}</p>
@@ -60,12 +60,12 @@
       <!-- Remember Me -->
       {% if form.remember_me %}
       <div class="flex items-center justify-between">
-        <label class="flex items-center space-x-2 text-sm text-[#E10600]">
+        <label class="flex items-center space-x-2 text-sm text-[#05561b]">
           {{ form.remember_me(class="h-4 w-4 rounded border-gray-300") }}
           <span>Remember me</span>
         </label>
 
-        <a href="{{ url_for('auth.reset_password_request') }}" class="text-sm text-[#E10600] hover:underline">
+        <a href="{{ url_for('auth.reset_password_request') }}" class="text-sm text-[#05561b] hover:underline">
           Forgot password?
         </a>
       </div>
@@ -75,7 +75,7 @@
       <div>
         <button type="submit" class="w-full py-2.5 rounded-lg font-semibold text-white
                  transition-all duration-200
-                 hover:brightness-110 hover:shadow-lg" style="background-color:#E10600;">
+                 hover:brightness-110 hover:shadow-lg" style="background-color:#05561b;">
           Login
         </button>
       </div>
@@ -84,7 +84,7 @@
     <!-- Register Redirect -->
     <p class="text-center text-sm text-black mt-6">
       Don’t have an account?
-      <a href="{{ url_for('auth.register') }}" class="text-[#E10600] font-medium hover:underline">
+      <a href="{{ url_for('auth.register') }}" class="text-[#05561b] font-medium hover:underline">
         Register here
       </a>
     </p>
