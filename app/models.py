@@ -59,11 +59,13 @@ class User(UserMixin, db.Model):
     incidents = db.relationship(
         "Incident",
         back_populates="created_by",
+        foreign_keys="Incident.created_by_id",
         overlaps="assigned_incidents,investigator"
     )
     assigned_incidents = db.relationship(
         "Incident",
         back_populates="investigator",
+        foreign_keys="Incident.investigator_id",
         overlaps="incidents,created_by"
     )
 
@@ -98,10 +100,11 @@ class Incident(db.Model):
     hours_lost = db.Column(db.Float, nullable=False, default=0.0)
     cost_per_hour = db.Column(db.Float, nullable=False, default=0.0)
     total_cost = db.Column(db.Float, nullable=False, default=0.0)
-    investigator_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    investigator_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     investigator = db.relationship(
         "User",
         back_populates="assigned_incidents",
+        foreign_keys=[investigator_id],
         overlaps="incidents,created_by"
     )
 
@@ -114,6 +117,7 @@ class Incident(db.Model):
     created_by = db.relationship(
         "User",
         back_populates="incidents",
+        foreign_keys=[created_by_id],
         overlaps="assigned_incidents,investigator"
     )
 

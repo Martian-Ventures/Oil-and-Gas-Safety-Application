@@ -70,9 +70,14 @@ def create_app(config_class=Config):
             return redirect(url_for('main.dashboard'))  # ✅ Use url_for
         return redirect(url_for('auth.register'))  # ✅ Use url_for
     
-    # Initialize scheduler AFTER app is created
-    scheduler.init_app(app)
-    scheduler.start()
+    # Initialize scheduler AFTER app is created (but not during migrations/CLI commands)
+    if os.getenv('FLASK_ENV') != 'migration':
+        try:
+            scheduler.init_app(app)
+            if not scheduler.running:
+                scheduler.start()
+        except Exception as e:
+            print(f"Warning: Scheduler initialization skipped: {e}")
 
     return app
 

@@ -1,5 +1,6 @@
 import logging
 from logging.config import fileConfig
+import os
 
 from flask import current_app
 
@@ -8,6 +9,9 @@ from alembic import context
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+# Set environment to prevent scheduler from starting during migrations
+os.environ['FLASK_ENV'] = 'migration'
 
 from app import create_app, db
 app = create_app()
@@ -99,12 +103,18 @@ def run_migrations_online():
     if conf_args.get("process_revision_directives") is None:
         conf_args["process_revision_directives"] = process_revision_directives
 
+    # Remove compare_type if it's already in conf_args to avoid duplicates
+    conf_args.pop('compare_type', None)
+    conf_args.pop('compare_server_default', None)
+
     connectable = get_engine()
 
     with connectable.connect() as connection:
         context.configure(
             connection=connection,
             target_metadata=get_metadata(),
+            compare_type=False,
+            compare_server_default=False,
             **conf_args
         )
 
