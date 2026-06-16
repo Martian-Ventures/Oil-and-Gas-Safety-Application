@@ -113,7 +113,7 @@
             <div class="p-6 flex flex-col items-center border-b border-white">
                 <!-- Yin-Yang logo using register-bg.jpg -->
                 <div class="mb-2 relative">
-                    <img src="/static/images/register-bg.jpg" alt="QHSE Logo"
+                    <img src="https://placeholder.com" alt="QHSE Logo"
                         class="w-100 h-100 rounded-xl object-cover ring-2 ring-white shadow-2xl" />
                     <!-- Optional subtle overlay/glow effect -->
                     <div
@@ -134,7 +134,7 @@
                         <a href="javascript:void(0)" class="block px-5 py-3 text-black 
                                   group-hover:text-white group-hover:bg-gray-800/30 group-hover:rounded-lg 
                                   group-[.active]:pl-5 group-[.active]:pr-0 group-[.active]:py-3.5 
-                                  group-[.active]:bg-red-600 group-[.active]:text-white 
+                                  group-[.active]:bg-[#05561b] group-[.active]:text-white 
                                   group-[.active]:font-medium group-[.active]:rounded-l-full 
                                   transition-colors">
                             Dashboard
@@ -145,7 +145,7 @@
                         <a href="javascript:void(0)" class="block px-5 py-3 text-black 
                                   group-hover:text-white group-hover:bg-gray-800/30 group-hover:rounded-lg 
                                   group-[.active]:pl-5 group-[.active]:pr-0 group-[.active]:py-3.5 
-                                  group-[.active]:bg-red-600 group-[.active]:text-white 
+                                  group-[.active]:bg-[#05561b] group-[.active]:text-white 
                                   group-[.active]:font-medium group-[.active]:rounded-l-full 
                                   transition-colors">
                             Audit Management
@@ -159,7 +159,7 @@
                         <a href="javascript:void(0)" class="block px-5 py-3 text-black 
                                   group-hover:text-white group-hover:bg-gray-800/30 group-hover:rounded-lg 
                                   group-[.active]:pl-5 group-[.active]:pr-0 group-[.active]:py-3.5 
-                                  group-[.active]:bg-red-600 group-[.active]:text-white 
+                                  group-[.active]:bg-[#05561b] group-[.active]:text-white 
                                   group-[.active]:font-medium group-[.active]:rounded-l-full 
                                   transition-colors">
                             Incident Management
@@ -208,7 +208,7 @@
 
         <!-- Main Content -->
         <div
-            class="main-content flex-1 ml-64 bg-[url('/static/images/register-bg.jpg')] bg-cover bg-center bg-no-repeat min-h-screen">
+            class="main-content flex-1 ml-64 bg-[url('https://placeholder.com')] bg-cover bg-center bg-no-repeat min-h-screen">
             <!-- --------------- DASHBOARD SECTION (placeholder) ---------------- -->
             <div id="dashboard-section" class="hidden">
                 <div class="header">
@@ -261,17 +261,17 @@
                         {% if current_user.is_authenticated %}
                         <div class="text-sm">{{ current_user.full_name }}</div>
                         <div
-                            class="w-10 h-10 rounded-xl bg-[#E10600] text-white flex items-center justify-center font-bold">
+                            class="w-10 h-10 rounded-xl bg-[#05561b] text-white flex items-center justify-center font-bold">
                             {{ current_user.full_name.split(' ')[0][0] ~ (current_user.full_name.split(' ')[1][0] if
                             current_user.full_name.split(' ')|length > 1 else '') }}
                         </div>
                         <a href="{{ url_for('auth.logout') }}"
-                            class="ml-2 px-3 py-1 rounded bg-red-500 text-white text-sm hover:bg-red-600 transition">
+                            class="ml-2 px-3 py-1 rounded bg-red-500 text-white text-sm hover:#05561b transition">
                             Logout
                         </a>
                         {% else %}
                         <a href="{{ url_for('auth.login') }}"
-                            class="px-4 py-1.5 rounded bg-[#E10600] text-white text-sm hover:brightness-110 transition">
+                            class="px-4 py-1.5 rounded bg-[#05561b] text-white text-sm hover:brightness-110 transition">
                             Login
                         </a>
                         {% endif %}

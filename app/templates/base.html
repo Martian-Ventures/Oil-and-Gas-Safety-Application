@@ -38,24 +38,24 @@
   {% block navbar %}
   <!-- Topbar 
   <header class="bg-white/90 backdrop-blur-md shadow py-2 px-4 flex items-center justify-between relative z-20">
-    <a href="{{ url_for('main.index') }}" class="text-lg font-bold text-[#E10600]">
+    <a href="{{ url_for('main.index') }}" class="text-lg font-bold text-[#05561b]">
       Martian QHSE Management System
     </a>
 
     <div class="flex items-center gap-3">
       {% if current_user.is_authenticated %}
       <div class="text-sm">{{ current_user.full_name }}</div>
-      <div class="w-10 h-10 rounded-xl bg-[#E10600] text-white flex items-center justify-center font-bold">
+      <div class="w-10 h-10 rounded-xl bg-[#05561b] text-white flex items-center justify-center font-bold">
         {{ current_user.full_name.split(' ')[0][0] ~ (current_user.full_name.split(' ')[1][0] if
         current_user.full_name.split(' ')|length > 1 else '') }}
       </div>
       <a href="{{ url_for('auth.logout') }}"
-        class="ml-2 px-3 py-1 rounded bg-red-500 text-white text-sm hover:bg-red-600 transition">
+        class="ml-2 px-3 py-1 rounded bg-red-500 text-white text-sm hover:#05561b transition">
         Logout
       </a>
       {% else %}
       <a href="{{ url_for('auth.login') }}"
-        class="px-4 py-1.5 rounded bg-[#E10600] text-white text-sm hover:brightness-110 transition">
+        class="px-4 py-1.5 rounded bg-[#05561b] text-white text-sm hover:brightness-110 transition">
         Login
       </a>
       {% endif %}
